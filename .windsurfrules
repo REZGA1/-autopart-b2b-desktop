@@ -1,0 +1,81 @@
+# AutoPart B2B APP - AI Rules (Optimized)
+# Last updated: 2026-04-29
+
+## ⚡ CORE RULES
+- **NO TypeScript** - Pure JavaScript only
+- **NO Hallucination** - Verify before claiming (use `code_search`/`read_file`)
+- **NO serviceRoleKey** in frontend - Use `supabaseAdmin` server-only
+- **NO Redux/CSS modules** - Use Zustand/Tailwind
+- **Backend**: CommonJS | **Frontend**: ES Modules
+
+## 🔧 WORKFLOW
+1. **Explore**: `code_search` → `find_by_name` → `read_file` (parallel)
+2. **Edit**: `multi_edit` for multiple changes, minimal scope
+3. **Test**: Verify fixes before completing
+
+## � STACK
+| Layer | Tech |
+|-------|------|
+| Frontend | React 19, Vite 8, Tailwind 4, shadcn/ui 4 |
+| State | Zustand 5 (persist), react-hook-form 7 + Zod 4 |
+| Backend | Express 5.2 (CommonJS), Supabase (PostgreSQL) |
+| Auth | JWT (localStorage) + refresh cookie, Axios interceptors |
+
+## 📁 STRUCTURE
+```
+backend/
+  server.js, app.js
+  config/{env,supabase}.js
+  middleware/{auth,errorHandler,upload,validate}.js
+  controllers/{auth,merchant,inventory,document,supplierCatalog}Controller.js
+  models/{merchant,product,inventoryTransaction,vehicle,supplierProduct}Model.js
+  routes/{auth,merchant,inventory,supplierCatalog}Routes.js
+frontend/src/
+  main.jsx, App.jsx, index.css
+  pages/{Home,Login,Register,Profile,Inventory,Vehicles}Page.jsx
+  components/ui/ (shadcn), Layout.jsx, {Admin,Contacts}Section.jsx
+  lib/{api,authStore,merchantApi,inventoryApi,supplierCatalogApi}.js
+  stores/onlineStore.js, hooks/useOnlineStatus.js
+```
+
+## 🔄 PATTERNS
+
+### Auth Flow
+- JWT accessToken (Zustand + localStorage) + refreshToken cookie
+- 401 → auto-refresh `/api/auth/refresh` → trigger `token-refreshed` event
+- Protected routes: `RequireAuth` checks `authStore.token`
+
+### API Routes
+- `/api/auth/*` - Login/register/refresh/profile
+- `/api/merchant/*` - Merchant operations
+- `/api/inventory/*` - Inventory (merchant role required)
+- `/api/supplier-catalog/*` - Supplier catalog
+- `/api/health` - Health check
+
+### Forms
+- Frontend: react-hook-form + Zod validation
+- Backend: Joi validation
+- shadcn/ui uses `@base-ui/react` + `cn()` utility
+
+## 🚫 PROHIBITIONS
+- ❌ serviceRoleKey in frontend
+- ❌ Client modifies `validated` field
+- ❌ Forget CORS credentials for cookie auth
+- ❌ Assume file paths - always search first
+
+## 📊 INVENTORY SYSTEM
+- **Tables**: `products`, `inventory_transactions`, `vehicles`, `merchant_vehicles`
+- **Features**: Auto transaction logging, stock alerts, filters, sorting
+- **Storage**: Supabase bucket `Merchant_Products`
+- **Endpoints**: CRUD + image upload + transaction history
+
+## ✏️ EDITING
+- Read before edit, minimal changes
+- `multi_edit` for same-file changes
+- New imports at file top
+- Ensure `old_string` is unique
+
+## � DEBUGGING
+- Root cause > symptom
+- Add logs at key points
+- One-line fixes preferred
