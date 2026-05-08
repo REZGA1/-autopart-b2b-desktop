@@ -422,15 +422,10 @@ const SupplierCatalogController = {
       }
 
       const imageUrl = product.image_url;
-      const bucket = 'supplier_products';
-      const prefix = `/storage/v1/object/public/${bucket}/`;
-      const idx = imageUrl.indexOf(prefix);
-
-      if (idx === -1) {
-        return errorResponse(res, 'Invalid image URL', 400);
-      }
-
-      const storagePath = decodeURIComponent(imageUrl.slice(idx + prefix.length).split('?')[0]);
+      const url = new URL(imageUrl);
+      const pathParts = url.pathname.split('/');
+      const fileName = pathParts[pathParts.length - 1];
+      const storagePath = decodeURIComponent(fileName.split('?')[0]);
 
       const { data, error } = await supabaseAdmin.storage
         .from('supplier_products')

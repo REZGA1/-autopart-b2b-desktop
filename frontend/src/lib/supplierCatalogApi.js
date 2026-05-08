@@ -10,7 +10,7 @@ const BUCKET_NAME = 'supplier_products';
  */
 export function getSupplierProductImageUrl(productId) {
   // Use proxy endpoint to avoid RLS issues
-  return `/api/supplier/catalog/products/${productId}/image`;
+  return `${api.defaults.baseURL}/supplier/catalog/products/${productId}/image`;
 }
 
 /**

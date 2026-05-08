@@ -9,7 +9,8 @@
     "prebuild": "cd .. && npx vite build --config vite.config.mjs --mode production",
     "postbuild": "node scripts/copy-renderer.js",
     "build": "npm run prebuild && npm run postbuild",
-    "dist:win": "npm run build && npx electron-packager . AutoPartB2B --overwrite --platform=win32 --arch=x64 --icon=icon.png --prune=true --out=dist-packaged --ignore=\"^/(dist-packaged|scripts|electron-builder\\\\.json)\""
+    "dist:win": "npm run build && npx electron-packager . AutoPartB2B --overwrite --platform=win32 --arch=x64 --icon=icon.png --prune=true --out=dist-packaged --ignore=\"^/(dist-packaged|scripts|electron-builder\\\\.json)\"",
+    "dist:installer": "npm run build && npx electron-builder build --win"
   },
   "devDependencies": {
     "electron": "^35.0.0",

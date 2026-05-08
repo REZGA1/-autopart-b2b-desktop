@@ -120,15 +120,14 @@ export default function RegisterPage() {
                   <div className="h-10 flex items-center text-sm text-slate-500">Checking availability...</div>
                 ) : merchantExists ? (
                   <>
-                    <Select value={form.role} onValueChange={(v) => setField('role', v)} disabled>
-                      <SelectTrigger className="w-full">
+                    <Select value={form.role} onValueChange={(v) => setField('role', v)}>
+                      <SelectTrigger className="w-full font-medium text-slate-900">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="supplier">Supplier</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-500">New registrations are limited to suppliers only. Merchant account already exists.</p>
                   </>
                 ) : (
                   <>

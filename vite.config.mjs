@@ -11,7 +11,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './frontend/src'),
     },
   },
-  envDir: '.', // read .env from project root
+  envDir: __dirname, // read .env from project root
   server: {
     port: 5173,
     proxy: {
@@ -26,5 +26,9 @@ export default defineConfig({
     emptyOutDir: true,
   },
   base: './',
+  define: {
+    global: 'window',
+    'process.env': {},
+  },
 })
 

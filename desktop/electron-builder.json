@@ -11,8 +11,14 @@
     "icon.png"
   ],
   "win": {
-    "target": "portable",
+    "target": "nsis",
     "icon": "icon.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
   },
   "asar": true
 }

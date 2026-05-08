@@ -30,7 +30,7 @@ function fixImageUrl(imageUrl) {
  * @returns {string} Proxy image URL
  */
 export function getStoreProductImageUrl(productId) {
-  return `/api/store/products/${productId}/image`;
+  return `${api.defaults.baseURL}/store/products/${productId}/image`;
 }
 
 /**

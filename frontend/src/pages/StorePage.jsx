@@ -681,7 +681,11 @@ export default function StorePage() {
                       >
                         {product.image_url ? (
                           <img
-                            src={getStoreProductImageUrl(product.id)}
+                            src={product.image_url}
+                            onError={(e) => {
+                              // If direct Supabase URL fails, fallback to proxy
+                              e.target.src = getStoreProductImageUrl(product.id);
+                            }}
                             alt={product.name}
                             className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                           />
@@ -896,7 +900,10 @@ export default function StorePage() {
                   <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
                     {selectedProduct.image_url ? (
                       <img
-                        src={getStoreProductImageUrl(selectedProduct.id)}
+                        src={selectedProduct.image_url}
+                        onError={(e) => {
+                          e.target.src = getStoreProductImageUrl(selectedProduct.id);
+                        }}
                         alt={selectedProduct.name}
                         className="w-full h-full object-cover"
                       />

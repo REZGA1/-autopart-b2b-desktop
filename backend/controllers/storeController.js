@@ -554,20 +554,14 @@ const StoreController = {
         return errorResponse(res, 'Image not found', 404);
       }
 
-      const bucket = 'supplier_products';
-      const prefix = `/storage/v1/object/public/${bucket}/`;
-      const idx = product.image_url.indexOf(prefix);
-
-      if (idx === -1) {
-        return errorResponse(res, 'Invalid image URL', 400);
-      }
-
-      const storagePath = decodeURIComponent(
-        product.image_url.slice(idx + prefix.length).split('?')[0]
-      );
+      const imageUrl = product.image_url;
+      const url = new URL(imageUrl);
+      const pathParts = url.pathname.split('/');
+      const fileName = pathParts[pathParts.length - 1];
+      const storagePath = decodeURIComponent(fileName.split('?')[0]);
 
       const { data, error } = await supabaseAdmin.storage
-        .from(bucket)
+        .from('supplier_products')
         .download(storagePath);
 
       if (error) {

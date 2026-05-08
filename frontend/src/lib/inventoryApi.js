@@ -93,7 +93,7 @@ export async function deleteProduct(productId) {
  */
 export function getProductImageUrl(productId) {
   // Use proxy endpoint to avoid RLS issues
-  return `/api/inventory/products/${productId}/image`;
+  return `${api.defaults.baseURL}/inventory/products/${productId}/image`;
 }
 
 /**

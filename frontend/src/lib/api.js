@@ -42,8 +42,13 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    // If not 401 or already retried, reject immediately
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    // If not 401, or already retried, or it's a login/register request, reject immediately
+    if (
+      error.response?.status !== 401 || 
+      originalRequest._retry || 
+      originalRequest.url?.includes('/auth/login') || 
+      originalRequest.url?.includes('/auth/register')
+    ) {
       return Promise.reject(error)
     }
 
@@ -88,7 +93,7 @@ api.interceptors.response.use(
       // Refresh failed - clear all tokens and redirect to login
       setAuthToken('')
       updateStoredToken('')
-      window.location.href = '/login'
+      window.location.hash = '#/login'
       return Promise.reject(refreshError)
 
     } finally {
