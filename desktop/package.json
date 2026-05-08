@@ -1,0 +1,37 @@
+{
+  "name": "autopart-b2b-desktop",
+  "version": "1.0.0",
+  "description": "AutoPart B2B Desktop Application",
+  "main": "electron.js",
+  "scripts": {
+    "dev": "electron .",
+    "build": "npm run build:web && npm run dist",
+    "build:web": "cd .. && vite build --config vite.config.mjs",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.autopart.b2b",
+    "productName": "AutoPart B2B",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron.js",
+      "preload.js",
+      "../frontend/dist/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "../frontend/public/panlelogo.svg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0"
+  }
+}
