@@ -23,14 +23,24 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, etc.)
+    // Allow requests with no origin (like mobile apps, curl, electron file://, etc.)
     if (!origin) return callback(null, true);
-    
+
     // Allow any localhost origin
     if (origin.includes('localhost') || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    
+
+    // Allow Electron file:// protocol
+    if (origin.startsWith('file://')) {
+      return callback(null, true);
+    }
+
+    // Allow any Railway app URL
+    if (origin.includes('railway.app')) {
+      return callback(null, true);
+    }
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,

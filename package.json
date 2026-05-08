@@ -8,6 +8,8 @@
     "dev:api": "nodemon backend/server.js",
     "dev:web": "vite --config vite.config.mjs",
     "build:web": "vite build --config vite.config.mjs",
+    "desktop:dev": "cd desktop && npm run dev",
+    "desktop:build": "cd desktop && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
