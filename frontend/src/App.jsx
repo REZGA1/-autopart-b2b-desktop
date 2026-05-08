@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuth, useAuthStore } from '@/lib/authStore'
 import HomePage from '@/pages/HomePage'
@@ -30,7 +30,7 @@ export default function App() {
   }, [initializeAuth])
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<RequireAuth><HomePage /></RequireAuth>} />
         <Route path="/login" element={<LoginPage />} />
@@ -44,6 +44,6 @@ export default function App() {
         <Route path="/statistics" element={<RequireAuth><StatisticsPage /></RequireAuth>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }

@@ -5,7 +5,6 @@ import path from 'path'
 // Single root package.json, but serve React app from /frontend
 export default defineConfig({
   root: 'frontend',
-  base: './',
   plugins: [react()],
   resolve: {
     alias: {
@@ -26,5 +25,6 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
+  base: './',
 })
 

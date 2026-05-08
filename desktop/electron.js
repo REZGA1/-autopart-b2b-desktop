@@ -12,7 +12,7 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
-    icon: path.join(__dirname, '../frontend/public/panlelogo.svg'),
+    icon: path.join(__dirname, 'icon.png'),
     show: false
   });
 
@@ -23,8 +23,9 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
-    // Production: load built files
-    mainWindow.loadFile(path.join(__dirname, '../frontend/dist/index.html'));
+    // Production: load built files from the renderer/ folder inside our app
+    const indexPath = path.join(__dirname, 'renderer', 'index.html');
+    mainWindow.loadFile(indexPath);
   }
 
   mainWindow.once('ready-to-show', () => {

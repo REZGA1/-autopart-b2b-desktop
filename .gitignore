@@ -5,6 +5,10 @@ frontend/node_modules/
 # Build outputs
 frontend/dist/
 frontend/dist-ssr/
+desktop/dist-packaged/
+desktop/dist-electron/
+desktop/renderer/
+desktop/node_modules/
 
 # Environment variables
 .env

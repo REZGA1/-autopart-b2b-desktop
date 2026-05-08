@@ -1,0 +1,18 @@
+{
+  "appId": "com.autopart.b2b",
+  "productName": "AutoPartB2B",
+  "directories": {
+    "output": "dist-electron"
+  },
+  "files": [
+    "electron.js",
+    "preload.js",
+    "renderer/**/*",
+    "icon.png"
+  ],
+  "win": {
+    "target": "portable",
+    "icon": "icon.png"
+  },
+  "asar": true
+}

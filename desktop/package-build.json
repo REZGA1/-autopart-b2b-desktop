@@ -1,0 +1,11 @@
+{
+  "name": "autopart-b2b-desktop",
+  "version": "1.0.0",
+  "main": "electron.js",
+  "scripts": {
+    "dist": "npx electron-packager . --overwrite --platform=win32 --arch=x64 --prune=true --out=dist-packaged"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
+  }
+}

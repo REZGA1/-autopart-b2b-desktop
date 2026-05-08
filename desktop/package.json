@@ -2,36 +2,18 @@
   "name": "autopart-b2b-desktop",
   "version": "1.0.0",
   "description": "AutoPart B2B Desktop Application",
+  "author": "AutoPart B2B Team",
   "main": "electron.js",
   "scripts": {
     "dev": "electron .",
-    "build": "npm run build:web && npm run dist",
-    "build:web": "cd .. && vite build --config vite.config.mjs",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win"
-  },
-  "build": {
-    "appId": "com.autopart.b2b",
-    "productName": "AutoPart B2B",
-    "directories": {
-      "output": "dist-electron"
-    },
-    "files": [
-      "electron.js",
-      "preload.js",
-      "../frontend/dist/**/*"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "../frontend/public/panlelogo.svg"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
+    "prebuild": "cd .. && npx vite build --config vite.config.mjs --mode production",
+    "postbuild": "node scripts/copy-renderer.js",
+    "build": "npm run prebuild && npm run postbuild",
+    "dist:win": "npm run build && npx electron-packager . AutoPartB2B --overwrite --platform=win32 --arch=x64 --icon=icon.png --prune=true --out=dist-packaged --ignore=\"^/(dist-packaged|scripts|electron-builder\\\\.json)\""
   },
   "devDependencies": {
     "electron": "^35.0.0",
-    "electron-builder": "^26.0.0"
+    "electron-builder": "^26.0.0",
+    "electron-packager": "^17.1.2"
   }
 }
