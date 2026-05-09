@@ -404,7 +404,7 @@ export default function SupplierCatalogPage() {
     setValue('quantity', product.quantity?.toString());
     setValue('minimum', product.minimum?.toString() || '0');
     setValue('product_condition', product.product_condition);
-    setImagePreview(product.image_url ? getSupplierProductImageUrl(product.id) : null);
+    setImagePreview(getSupplierProductImageUrl(product.id));
     
     setSelectedVehicles([]);
     setNewVehiclesList([]);
@@ -1742,21 +1742,15 @@ export default function SupplierCatalogPage() {
               <div className="space-y-6">
                 {/* Image */}
                 <div className="flex justify-center">
-                  {selectedProduct.image_url ? (
-                    <img
-                      src={getSupplierProductImageUrl(selectedProduct.id)}
+                  <div className="h-48 w-48 rounded-lg bg-slate-100 overflow-hidden">
+                    <ProductImage
+                      src={selectedProduct.image_url}
+                      productId={selectedProduct.id}
+                      getProxyUrl={getSupplierProductImageUrl}
                       alt={selectedProduct.name}
                       className="h-48 w-48 rounded-lg object-cover"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
+                      placeholderClass="h-20 w-20 text-slate-300"
                     />
-                  ) : null}
-                  <div
-                    className={`h-48 w-48 rounded-lg bg-slate-100 items-center justify-center ${selectedProduct.image_url ? 'hidden' : 'flex'}`}
-                  >
-                    <Package className="h-20 w-20 text-slate-300" />
                   </div>
                 </div>
 

@@ -703,7 +703,7 @@ export default function StorePage() {
                         <p className="text-xs text-gray-400 mt-1">by {product.supplier_name || 'Unknown'}</p>
                         <div className="flex items-center justify-between mt-3">
                           <span className="font-bold text-lg">
-                            {product.selling_price?.toFixed(2) || '0.00'} DA
+                            {product.selling_price?.toLocaleString() || '0'} DA
                           </span>
                           <Badge variant={product.is_available ? 'default' : 'secondary'}>
                             {product.product_condition}
@@ -975,7 +975,7 @@ export default function StorePage() {
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
                       <p className="text-sm text-gray-500">Price</p>
-                      <p className="font-bold text-xl text-slate-900">{selectedProduct.selling_price?.toFixed(2) || '0.00'} DA</p>
+                      <p className="font-bold text-xl text-slate-900">{selectedProduct.selling_price?.toLocaleString() || '0'} DA</p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3">
                       <p className="text-sm text-gray-500">Availability</p>
@@ -1152,7 +1152,7 @@ export default function StorePage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="font-semibold">Grand Total:</span>
-                    <span className="text-xl font-bold">{cartTotal.toFixed(2)} DA</span>
+                    <span className="text-xl font-bold">{cartTotal} DA</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
                     Will create {new Set(cart.map(i => i.supplier_id)).size} separate purchase request(s)
@@ -1271,7 +1271,7 @@ export default function StorePage() {
                                 <>
                                   <p className="font-medium">{item.product_snapshot_name || product?.name || 'Unknown Product'}</p>
                                   <p className="text-sm text-gray-500">
-                                    {item.quantity} x {item.unit_price?.toFixed(2)} DA
+                                    {item.quantity} x {item.unit_price?.toLocaleString()} DA
                                   </p>
                                   {vehicleText && (
                                     <p className="text-xs text-blue-600 mt-0.5">
@@ -1283,14 +1283,14 @@ export default function StorePage() {
                             })()}
                           </div>
                         </div>
-                        <p className="font-semibold">{(item.quantity * item.unit_price).toFixed(2)} DA</p>
+                        <p className="font-semibold">{(item.quantity * item.unit_price).toLocaleString()} DA</p>
                       </div>
                     ))}
                   </div>
                   <div className="flex justify-between items-center mt-4 pt-4 border-t">
                     <span className="font-semibold">Total:</span>
                     <span className="text-xl font-bold">
-                      {(selectedRequest.items || []).reduce((sum, item) => sum + (item.quantity * item.unit_price), 0).toFixed(2)} DA
+                      {(selectedRequest.items || []).reduce((sum, item) => sum + (item.quantity * item.unit_price), 0).toLocaleString()} DA
                     </span>
                   </div>
                 </div>
