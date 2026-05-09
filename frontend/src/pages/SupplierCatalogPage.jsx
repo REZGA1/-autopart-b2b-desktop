@@ -64,6 +64,7 @@ import {
   getSupplierProductImageUrl,
   adjustQuantity
 } from '@/lib/supplierCatalogApi'
+import ProductImage from '@/components/ProductImage'
 
 // Part types/categories
 const PART_TYPES = [
@@ -149,8 +150,6 @@ export default function SupplierCatalogPage() {
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [imageLoadError, setImageLoadError] = useState({});
-  const [imageProxyMode, setImageProxyMode] = useState({});
   
   // Toast notification
   const [toast, setToast] = useState(null);
@@ -199,8 +198,6 @@ export default function SupplierCatalogPage() {
     }
     isSearchUpdate.current = false;
     
-    setImageLoadError({});
-    setImageProxyMode({});
     try {
       const params = {
         search: searchQuery || undefined,
@@ -672,7 +669,6 @@ export default function SupplierCatalogPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
-                  placeholder="Search by name, serial number, or description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -972,28 +968,18 @@ export default function SupplierCatalogPage() {
                           </td>
                         )}
                         <td className="px-3 py-2">
-                          {product.image_url && !imageLoadError[product.id] ? (
-                            <img
-                              src={imageProxyMode[product.id] ? getSupplierProductImageUrl(product.id) : product.image_url}
+                          <div 
+                            className="h-10 w-10 rounded overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => { setSelectedProduct(product); setIsDetailsDialogOpen(true); }}
+                          >
+                            <ProductImage 
+                              src={product.image_url} 
+                              productId={product.id} 
+                              getProxyUrl={getSupplierProductImageUrl}
                               alt={product.name}
-                              className="h-10 w-10 rounded object-cover cursor-pointer hover:opacity-80"
-                              onClick={() => { setSelectedProduct(product); setIsDetailsDialogOpen(true); }}
-                              onError={() => {
-                                if (!imageProxyMode[product.id]) {
-                                  setImageProxyMode(prev => ({ ...prev, [product.id]: true }));
-                                } else {
-                                  setImageLoadError(prev => ({ ...prev, [product.id]: true }));
-                                }
-                              }}
+                              placeholderClass="h-5 w-5 text-slate-400"
                             />
-                          ) : (
-                            <div 
-                              className="flex h-10 w-10 items-center justify-center rounded bg-slate-100 cursor-pointer hover:bg-slate-200"
-                              onClick={() => { setSelectedProduct(product); setIsDetailsDialogOpen(true); }}
-                            >
-                              <Package className="h-5 w-5 text-slate-400" />
-                            </div>
-                          )}
+                          </div>
                         </td>
                         <td className="px-3 py-2">
                           <div className="font-medium text-sm text-slate-900">{product.name}</div>
@@ -1032,10 +1018,10 @@ export default function SupplierCatalogPage() {
                           </div>
                         </td>
                         <td className="px-3 py-2 text-sm text-slate-600">
-                          {product.purchase_price?.toLocaleString()}
+                          {product.purchase_price?.toLocaleString()} DA
                         </td>
                         <td className="px-3 py-2 text-sm text-slate-600">
-                          {product.selling_price?.toLocaleString() || '-'}
+                          {product.selling_price?.toLocaleString() ? `${product.selling_price.toLocaleString()} DA` : '-'}
                         </td>
                         <td className="px-3 py-2 text-right">
                           <div className="flex justify-end gap-1">

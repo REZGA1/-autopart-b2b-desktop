@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -10,7 +11,8 @@ import {
   Car,
   X,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  ChevronLeft
 } from 'lucide-react'
 import Layout from '@/components/Layout'
 import { Button } from '@/components/ui/button'
@@ -47,6 +49,7 @@ const vehicleSchema = z.object({
 });
 
 export default function VehiclesPage() {
+  const navigate = useNavigate()
   const { profile } = useAuth()
   const isSupplier = profile?.role === 'supplier'
   
@@ -188,7 +191,6 @@ export default function VehiclesPage() {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="Search by make, model, year, or engine..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"

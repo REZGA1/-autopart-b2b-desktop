@@ -8,7 +8,7 @@ const validateRegister = (req, res, next) => {
 
   if (!email ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    errors.push('Invalid email address');
+    errors.push('Invalid email');
 
   if (!password || password.length < 8)
     errors.push('Password: at least 8 characters');
@@ -60,7 +60,7 @@ const validateProfileUpdate = (req, res, next) => {
     errors.push('role cannot be updated');
 
   if (body.business_email !== undefined && body.business_email !== null && String(body.business_email).trim() !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.business_email))
-    errors.push('Invalid business_email address');
+    errors.push('Invalid business email');
 
   if (body.business_phone !== undefined && body.business_phone !== null && String(body.business_phone).trim() !== '' && String(body.business_phone).trim().length < 6)
     errors.push('business_phone is too short');

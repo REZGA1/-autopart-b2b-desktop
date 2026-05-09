@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ToastNotification from '@/components/ToastNotification'
+import { useToast } from '@/hooks/useToast'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -16,6 +18,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [merchantExists, setMerchantExists] = useState(null)
   const [checkingMerchant, setCheckingMerchant] = useState(true)
+  const { toast, showToast, hideToast } = useToast()
 
   const [form, setForm] = useState({
     email: '',
@@ -69,9 +72,8 @@ export default function RegisterPage() {
 
       // If email confirmation is required
       if (result?.requiresEmailConfirmation) {
-        setError('')
-        alert(result?.message || 'Please check your email to confirm your account')
-        nav('/login')
+        showToast(result?.message || 'Please check your email to confirm', 'success')
+        setTimeout(() => nav('/login'), 2000)
         return
       }
 
@@ -115,32 +117,27 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="space-y-2 text-left">
-                <Label>Role</Label>
+                <Label className="text-slate-900 font-semibold">Role</Label>
                 {checkingMerchant ? (
-                  <div className="h-10 flex items-center text-sm text-slate-500">Checking availability...</div>
-                ) : merchantExists ? (
-                  <>
-                    <Select value={form.role} onValueChange={(v) => setField('role', v)}>
-                      <SelectTrigger className="w-full font-medium text-slate-900">
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="supplier">Supplier</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </>
+                   <div className="h-10 flex items-center text-sm text-slate-500">Checking availability...</div>
                 ) : (
                   <>
                     <Select value={form.role} onValueChange={(v) => setField('role', v)}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select role" />
+                      <SelectTrigger className="w-full font-bold text-slate-900 border-slate-300">
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="merchant">Merchant</SelectItem>
+                        <SelectItem value="merchant" disabled={merchantExists}>
+                          Merchant {merchantExists && '(Already exists)'}
+                        </SelectItem>
                         <SelectItem value="supplier">Supplier</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-slate-500">Choose your role. Only one merchant is allowed in the system.</p>
+                    {merchantExists ? (
+                      <p className="text-xs text-amber-600 mt-1 font-medium">Only one merchant is allowed. Please register as a supplier.</p>
+                    ) : (
+                      <p className="text-xs text-slate-500 mt-1">Choose your role. Only one merchant is allowed in the system.</p>
+                    )}
                   </>
                 )}
               </div>
@@ -157,12 +154,13 @@ export default function RegisterPage() {
               <Button disabled={busy} className="w-full" type="submit">{busy ? '...' : 'Create account'}</Button>
             </form>
 
-            <div className="mt-4 text-sm text-slate-600">
-              Already have an account? <Link className="text-slate-900 underline" to="/login">Login</Link>
+            <div className="mt-4 text-sm text-center text-slate-600">
+              Already have an account? <Link className="text-slate-900 font-medium underline underline-offset-4" to="/login">Login</Link>
             </div>
           </CardContent>
         </Card>
       </div>
+      <ToastNotification toast={toast} onClose={hideToast} />
     </Layout>
   )
 }

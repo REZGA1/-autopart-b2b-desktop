@@ -132,11 +132,6 @@ const PurchaseRequestModel = {
 
     if (error) throw error;
 
-    // Debug: Log first request items to check if supplier_product has image_url
-    if (data && data.length > 0 && data[0].items && data[0].items.length > 0) {
-      console.log('[DEBUG] First item supplier_product:', JSON.stringify(data[0].items[0].supplier_product, null, 2));
-    }
-
     return {
       requests: data || [],
       pagination: {
@@ -148,53 +143,7 @@ const PurchaseRequestModel = {
     };
   },
 
-  /**
-   * Get all purchase requests for a merchant
-   */
-  async findByMerchant(merchantId, options = {}) {
-    const { status, page = 1, limit = 20 } = options;
 
-    let query = supabaseAdmin
-      .from('purchase_requests')
-      .select(`
-        *,
-        supplier:supplier_id (
-          id,
-          first_name,
-          last_name,
-          company_name,
-          avatar_url
-        ),
-        items:purchase_request_items (
-          *,
-          product:supplier_product_id (*)
-        )
-      `, { count: 'exact' })
-      .eq('merchant_id', merchantId)
-      .order('created_at', { ascending: false });
-
-    if (status) {
-      query = query.eq('status', status);
-    }
-
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-    query = query.range(from, to);
-
-    const { data, error, count } = await query;
-
-    if (error) throw error;
-
-    return {
-      requests: data || [],
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: count || 0,
-        totalPages: Math.ceil((count || 0) / parseInt(limit))
-      }
-    };
-  },
 
   /**
    * Get all purchase requests for a supplier
@@ -203,22 +152,6 @@ const PurchaseRequestModel = {
   async findBySupplier(supplierId, options = {}) {
     const { status, page = 1, limit = 20 } = options;
 
-    console.log('[findBySupplier] Starting query for supplierId:', supplierId, 'status:', status);
-
-    // First: Simple query without joins to check if data exists
-    let simpleQuery = supabaseAdmin
-      .from('purchase_requests')
-      .select('*')
-      .eq('supplier_id', supplierId);
-    
-    if (status) {
-      simpleQuery = simpleQuery.eq('status', status);
-    }
-
-    const { data: simpleData, error: simpleError } = await simpleQuery;
-    console.log('[findBySupplier] Simple query result:', { count: simpleData?.length, error: simpleError?.message });
-
-    // Second: Full query with joins
     let query = supabaseAdmin
       .from('purchase_requests')
       .select(`

@@ -10,7 +10,7 @@ export const profileFormSchema = z.object({
     .string()
     .trim()
     .optional()
-    .refine((v) => !v || v === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'Invalid email address'),
+    .refine((v) => !v || v === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'Invalid email'),
   business_phone: z
     .string()
     .trim()

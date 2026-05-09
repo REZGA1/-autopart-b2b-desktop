@@ -221,14 +221,12 @@ export default function ProfilePage() {
             <CardDescription>Business contact info on file</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-700">
-            <div>
-              business_phone:
-              {' '}
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500">Business Phone:</span>
               <span className="font-medium text-slate-900">{profile?.business_phone || '—'}</span>
             </div>
-            <div>
-              business_email:
-              {' '}
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500">Business Email:</span>
               <span className="font-medium text-slate-900">{profile?.business_email || '—'}</span>
             </div>
           </CardContent>
@@ -314,7 +312,7 @@ export default function ProfilePage() {
                 <Input id="address" disabled={!editing || busy} {...register('address')} />
               </div>
               <div className="space-y-2 text-left">
-                <Label htmlFor="business_email">Business email</Label>
+                <Label htmlFor="business_email">Business Email</Label>
                 <Input
                   id="business_email"
                   type="email"

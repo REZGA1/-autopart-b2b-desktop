@@ -74,6 +74,10 @@ import {
   updatePurchaseRequestStatus,
   getStoreProductImageUrl
 } from '@/lib/storeApi';
+import ProductImage from '@/components/ProductImage';
+import ToastNotification from '@/components/ToastNotification';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import { useToast } from '@/hooks/useToast';
 
 // Part types for filter
 const PART_TYPES = [
@@ -186,11 +190,7 @@ export default function StorePage() {
   const [requestStatusFilter, setRequestStatusFilter] = useState('');
 
   // Toast notification
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { toast, showToast, hideToast } = useToast();
 
   // Request details dialog
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -203,7 +203,13 @@ export default function StorePage() {
   const [updatingRequest, setUpdatingRequest] = useState(false);
 
   // Confirm dialog state
-  const [confirmDialog, setConfirmDialog] = useState({ open: false, title: '', message: '', onConfirm: null, variant: 'danger' });
+  const [confirmDialog, setConfirmDialog] = useState({ 
+    open: false, 
+    title: '', 
+    message: '', 
+    onConfirm: () => {}, 
+    variant: 'default' 
+  });
 
   // Fetch products
   const fetchProducts = useCallback(async () => {
@@ -461,7 +467,7 @@ export default function StorePage() {
   };
 
   // Calculate cart total
-  const cartTotal = cart.reduce((sum, item) => sum + (item.unit_price * item.quantity), 0);
+  const cartTotal = cart.reduce((sum, item) => sum + (item.unit_price * item.quantity), 0).toLocaleString();
 
   return (
     <Layout>
@@ -499,7 +505,6 @@ export default function StorePage() {
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <Input
-                        placeholder="Search products..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10"
@@ -511,7 +516,7 @@ export default function StorePage() {
                     onValueChange={(value) => setFilters({ ...filters, part_type: value })}
                   >
                     <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Part Type" />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {PART_TYPES.map((type) => (
@@ -679,21 +684,13 @@ export default function StorePage() {
                         className="aspect-square bg-gray-100 relative cursor-pointer"
                         onClick={() => handleViewProduct(product.id)}
                       >
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            onError={(e) => {
-                              // If direct Supabase URL fails, fallback to proxy
-                              e.target.src = getStoreProductImageUrl(product.id);
-                            }}
-                            alt={product.name}
-                            className="w-full h-full object-cover hover:opacity-90 transition-opacity"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full hover:bg-gray-200 transition-colors">
-                            <Package className="h-16 w-16 text-gray-400" />
-                          </div>
-                        )}
+                        <ProductImage 
+                          src={product.image_url} 
+                          productId={product.id} 
+                          getProxyUrl={getStoreProductImageUrl}
+                          alt={product.name}
+                          className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+                        />
                         {!product.is_available && (
                           <Badge variant="secondary" className="absolute top-2 right-2 bg-gray-800 text-white">
                             Out of Stock
@@ -898,20 +895,12 @@ export default function StorePage() {
                 {/* Product Image */}
                 <div className="lg:col-span-1">
                   <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                    {selectedProduct.image_url ? (
-                      <img
-                        src={selectedProduct.image_url}
-                        onError={(e) => {
-                          e.target.src = getStoreProductImageUrl(selectedProduct.id);
-                        }}
-                        alt={selectedProduct.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <Package className="h-24 w-24 text-gray-400" />
-                      </div>
-                    )}
+                    <ProductImage 
+                      src={selectedProduct.image_url} 
+                      productId={selectedProduct.id} 
+                      getProxyUrl={getStoreProductImageUrl}
+                      alt={selectedProduct.name}
+                    />
                   </div>
                 </div>
 
@@ -1096,20 +1085,18 @@ export default function StorePage() {
                       <div className="p-3 space-y-3">
                         {group.items.map((item) => (
                           <div key={item.supplier_product_id} className="flex items-center gap-3">
-                            <div className="w-14 h-14 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                              {item.image_url ? (
-                                <img
-                                  src={getStoreProductImageUrl(item.supplier_product_id)}
-                                  alt={item.name}
-                                  className="w-full h-full object-cover rounded"
-                                />
-                              ) : (
-                                <Package className="h-6 w-6 text-gray-400" />
-                              )}
+                            <div className="w-14 h-14 bg-gray-100 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              <ProductImage 
+                                src={item.image_url} 
+                                productId={item.supplier_product_id} 
+                                getProxyUrl={getStoreProductImageUrl}
+                                alt={item.name}
+                                placeholderClass="h-6 w-6 text-gray-400"
+                              />
                             </div>
                             <div className="flex-1 min-w-0">
                               <h4 className="font-medium text-sm truncate">{item.name}</h4>
-                              <p className="text-xs text-gray-500">{item.unit_price?.toFixed(2)} DA each</p>
+                              <p className="text-xs text-gray-500">{item.unit_price?.toLocaleString()} DA each</p>
                             </div>
                             <div className="flex items-center gap-1">
                               <Button
@@ -1146,7 +1133,7 @@ export default function StorePage() {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-500">Subtotal:</span>
                             <span className="font-medium">
-                              {group.items.reduce((sum, item) => sum + (item.unit_price * item.quantity), 0).toFixed(2)} DA
+                              {group.items.reduce((sum, item) => sum + (item.unit_price * item.quantity), 0).toLocaleString()} DA
                             </span>
                           </div>
                         </div>
@@ -1249,25 +1236,19 @@ export default function StorePage() {
                     {(selectedRequest.items || []).map((item, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                          <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
                             {(() => {
-                              // Use the API endpoint like the products list does
-                              const productImageUrl = item.supplier_product_id 
-                                ? getStoreProductImageUrl(item.supplier_product_id)
-                                : null;
-                              return productImageUrl ? (
-                                <img
-                                  src={productImageUrl}
-                                  alt={item.product_snapshot_name || 'Product'}
-                                  className="w-full h-full object-cover rounded"
-                                  onError={(e) => {
-                                    console.error('[Image Error] Failed to load:', productImageUrl);
-                                    e.target.onerror = null;
-                                    e.target.src = '';
-                                  }}
+                              const productObj = item.supplier_product || item.product;
+                              const imageUrl = item.image_url || (Array.isArray(productObj) ? productObj[0]?.image_url : productObj?.image_url);
+                              
+                              return (
+                                <ProductImage 
+                                  src={imageUrl} 
+                                  productId={item.supplier_product_id} 
+                                  getProxyUrl={getStoreProductImageUrl}
+                                  alt={item.product_snapshot_name}
+                                  placeholderClass="h-6 w-6 text-gray-400"
                                 />
-                              ) : (
-                                <Package className="h-6 w-6 text-gray-400" />
                               );
                             })()}
                           </div>
@@ -1356,53 +1337,23 @@ export default function StorePage() {
         </Dialog>
 
         {/* Confirm Dialog */}
-        <Dialog open={confirmDialog.open} onOpenChange={(open) => !open && setConfirmDialog(prev => ({ ...prev, open: false }))}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>{confirmDialog.title}</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-              <p className="text-gray-600">{confirmDialog.message}</p>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setConfirmDialog(prev => ({ ...prev, open: false }))}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant={confirmDialog.variant === 'danger' ? 'destructive' : 'default'}
-                onClick={() => confirmDialog.onConfirm && confirmDialog.onConfirm()}
-              >
-                Confirm
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+      {/* Standardized Toast Notification */}
+      <ToastNotification toast={toast} onClose={hideToast} />
 
-      {/* Toast Notification */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all ${
-          toast.type === 'success' ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'
-        }`}>
-          {toast.type === 'success' ? (
-            <CheckCircle className="h-5 w-5 text-emerald-500" />
-          ) : (
-            <AlertCircle className="h-5 w-5 text-red-500" />
-          )}
-          <span className={`text-sm font-medium ${toast.type === 'success' ? 'text-emerald-700' : 'text-red-700'}`}>
-            {toast.message}
-          </span>
-          <button
-            onClick={() => setToast(null)}
-            className={`ml-2 hover:opacity-70 ${toast.type === 'success' ? 'text-emerald-400' : 'text-red-400'}`}
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
+      {/* Standardized Confirmation Dialog */}
+      <ConfirmDialog 
+        isOpen={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onConfirm={() => {
+          confirmDialog.onConfirm();
+          setConfirmDialog(prev => ({ ...prev, open: false }));
+        }}
+        variant={confirmDialog.variant === 'danger' ? 'destructive' : 'default'}
+        loading={updatingRequest}
+      />
+      </div>
     </Layout>
   );
 }

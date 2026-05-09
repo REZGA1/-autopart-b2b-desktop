@@ -40,6 +40,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { getSupplierPurchaseRequests, getSupplierProductImageUrl, updateSupplierRequestStatus } from '@/lib/supplierCatalogApi';
+import ProductImage from '@/components/ProductImage';
+import ToastNotification from '@/components/ToastNotification';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import { useToast } from '@/hooks/useToast';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All Status' },
@@ -74,12 +78,14 @@ export default function SupplierRequestsPage() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [toast, setToast] = useState(null);
-
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { toast, showToast, hideToast } = useToast();
+  const [confirmDialog, setConfirmDialog] = useState({ 
+    open: false, 
+    title: '', 
+    message: '', 
+    onConfirm: () => {}, 
+    variant: 'default' 
+  });
 
   const fetchRequests = useCallback(async () => {
     setLoading(true);
@@ -107,19 +113,29 @@ export default function SupplierRequestsPage() {
     fetchRequests();
   }, [fetchRequests]);
 
-  const handleUpdateStatus = async (requestId, status) => {
-    setUpdating(true);
-    try {
-      await updateSupplierRequestStatus(requestId, status);
-      showToast(`Request ${status} successfully!`);
-      fetchRequests();
-      setIsDetailsOpen(false);
-    } catch (error) {
-      console.error('Failed to update status:', error);
-      showToast(error.response?.data?.error || 'Failed to update status', 'error');
-    } finally {
-      setUpdating(false);
-    }
+  const handleUpdateStatus = (requestId, status) => {
+    setConfirmDialog({
+      open: true,
+      title: `Confirm ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+      message: `Are you sure you want to set this request status to ${status}?`,
+      variant: status === 'rejected' || status === 'cancelled' ? 'destructive' : 'default',
+      onConfirm: async () => {
+        setUpdating(true);
+        try {
+          await updateSupplierRequestStatus(requestId, status);
+          showToast(`Request ${status} successfully!`);
+          fetchRequests();
+          setIsDetailsOpen(false);
+        } catch (error) {
+          console.error('Failed to update status:', error);
+          showToast(error.response?.data?.error || 'Failed to update status', 'error');
+        } finally {
+          setUpdating(true); // Keep updating true until dialog closes via state if needed, but here it's fine
+          setUpdating(false);
+          setConfirmDialog(prev => ({ ...prev, open: false }));
+        }
+      }
+    });
   };
 
   const openDetails = (request) => {
@@ -150,17 +166,19 @@ export default function SupplierRequestsPage() {
 
   return (
     <Layout title="Purchase Requests">
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white ${
-          toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'
-        }`}>
-          <div className="flex items-center gap-2">
-            {toast.type === 'error' ? <XCircle className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
-            <span>{toast.message}</span>
-          </div>
-        </div>
-      )}
+      {/* Standardized Toast Notification */}
+      <ToastNotification toast={toast} onClose={hideToast} />
+
+      {/* Standardized Confirmation Dialog */}
+      <ConfirmDialog 
+        isOpen={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onConfirm={confirmDialog.onConfirm}
+        variant={confirmDialog.variant}
+        loading={updating}
+      />
 
       <div className="space-y-6">
         {/* Header */}
@@ -407,32 +425,32 @@ export default function SupplierRequestsPage() {
                 <div className="space-y-3">
                   {selectedRequest.items?.map((item, index) => (
                     <div key={index} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                      <div className="w-12 h-12 bg-slate-200 rounded flex items-center justify-center flex-shrink-0">
-                        {item.supplier_product?.image_url ? (
-                          <img
-                            src={getSupplierProductImageUrl(item.supplier_product_id)}
-                            alt={item.product_snapshot_name}
-                            className="w-full h-full object-cover rounded"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.nextSibling.style.display = 'flex';
-                            }}
-                          />
-                        ) : (
-                          <Package className="h-6 w-6 text-slate-400" />
-                        )}
+                      <div className="w-12 h-12 bg-slate-200 rounded flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {(() => {
+                          const productObj = item.supplier_product || item.product;
+                          const imageUrl = item.image_url || productObj?.image_url;
+                          
+                          return (
+                            <ProductImage 
+                              src={imageUrl} 
+                              productId={item.supplier_product_id} 
+                              getProxyUrl={getSupplierProductImageUrl}
+                              alt={item.product_snapshot_name}
+                            />
+                          );
+                        })()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-slate-900 truncate">
                           {item.product_snapshot_name}
                         </p>
                         <p className="text-xs text-slate-500">
-                          Qty: {item.quantity} × {item.unit_price?.toFixed(2)} DA
+                          Qty: {item.quantity} × {item.unit_price?.toLocaleString()} DA
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-slate-900">
-                          {(item.quantity * item.unit_price).toFixed(2)} DA
+                          {(item.quantity * item.unit_price).toLocaleString()} DA
                         </p>
                       </div>
                     </div>
@@ -442,7 +460,7 @@ export default function SupplierRequestsPage() {
                 <div className="flex justify-between items-center pt-3 border-t mt-3">
                   <span className="font-semibold text-slate-700">Total Amount:</span>
                   <span className="text-xl font-bold text-slate-900">
-                    {getTotalAmount(selectedRequest.items).toFixed(2)} DA
+                    {getTotalAmount(selectedRequest.items).toLocaleString()} DA
                   </span>
                 </div>
               </div>
