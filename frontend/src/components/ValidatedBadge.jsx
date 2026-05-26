@@ -4,7 +4,7 @@ export default function ValidatedBadge({ validated }) {
       className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${
         validated
           ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          : 'border-slate-200 bg-white text-slate-600'
+          : 'border-border bg-card text-muted-foreground'
       }`}
       title={validated ? 'Validated' : 'Not validated'}
       aria-label={validated ? 'Validated' : 'Not validated'}

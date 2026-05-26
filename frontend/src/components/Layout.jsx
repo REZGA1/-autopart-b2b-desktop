@@ -28,8 +28,8 @@ function NavLink({ to, children, icon: Icon }) {
       to={to}
       className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
         isActive
-          ? 'bg-slate-900 text-white'
-          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          ? 'bg-primary/10 text-primary'
+          : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
       }`}
     >
       {Icon && <Icon className="h-4 w-4" />}
@@ -44,10 +44,10 @@ export default function Layout({ title, children }) {
   const nav = useNavigate()
 
   return (
-    <div className="min-h-full bg-slate-50">
-      <header className="border-b bg-white">
+    <div className="min-h-full bg-background">
+      <header className="border-b bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link to="/" className="font-semibold text-slate-900">AutoPart B2B</Link>
+          <Link to="/" className="font-semibold text-foreground">AutoPart B2B</Link>
 
           {/* Navigation Menu */}
           {profile && (

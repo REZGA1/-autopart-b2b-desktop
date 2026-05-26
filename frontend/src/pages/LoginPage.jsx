@@ -75,12 +75,12 @@ export default function LoginPage() {
                   {error}
                 </div>
               ) : null}
-              <Button disabled={busy} className="w-full bg-slate-900 hover:bg-slate-800" type="submit">
+              <Button disabled={busy} className="w-full" type="submit">
                 {busy ? 'Logging in...' : 'Login'}
               </Button>
             </form>
             <div className="mt-6 text-center text-sm text-slate-600">
-              Don't have an account? <Link className="text-slate-900 font-medium underline underline-offset-4" to="/register">Register</Link>
+              Don't have an account? <Link className="text-primary font-medium hover:underline underline-offset-4" to="/register">Register</Link>
             </div>
           </CardContent>
         </Card>
