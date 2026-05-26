@@ -573,7 +573,9 @@ export default function StorePage() {
                           <SelectItem value="">All Suppliers</SelectItem>
                           {suppliers.map((supplier) => (
                             <SelectItem key={supplier.id} value={supplier.id}>
-                              {supplier.company_name || `${supplier.first_name} ${supplier.last_name}`}
+                              {supplier.company_name 
+                                ? `${supplier.company_name} (${supplier.first_name} ${supplier.last_name})` 
+                                : `${supplier.first_name} ${supplier.last_name}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
