@@ -43,6 +43,7 @@ We have chosen a modern and highperformance tech stack to ensure a smooth user e
  **JWT (JSON Web Tokens)**: For secure and stateless authentication
  **Multer**: File upload management (images, documents)
  **Joi**: Serverside data validation to avoid errors
+ **Vercel**: Used as a backup/fallback serverless hosting for the backend API (in case the primary Railway server is unavailable)
 
 ### Desktop (Desktop Application)
  **Electron**: To convert our web application into a native desktop application
@@ -212,6 +213,79 @@ npm run desktop:installer
 ```
 
 The installer will be created in the `desktop/dist/` folder
+
+> ⚠️ **Important**: After changing the backend URL (e.g., switching to Vercel), you must rebuild the installer so that the new URL is embedded into the app.
+
+## Backend Deployment — Vercel (Backup Server)
+
+The backend API is primarily hosted on **Railway**. However, we also deploy it to **[Vercel](https://vercel.com)** as a **backup/fallback server** to ensure high availability. If the Railway server goes down or its free-tier period ends, the backend continues to work seamlessly via Vercel.
+
+### How it works
+
+The backend is a standard **Express.js** app. To make it work on Vercel (which uses serverless functions instead of a traditional long-running server), we added:
+
+- **`backend/vercel.json`** — Routes all incoming requests to the Express app
+- **`backend/api/index.js`** — Serverless entry point that exports `app` instead of calling `app.listen()`
+- **`.env.production`** at the root — Points `VITE_API_URL` to the active backend URL (Railway or Vercel)
+
+### Current active backend (production)
+
+```
+https://autopart-b2b-desktop.vercel.app/api
+```
+
+You can verify the backend is running by visiting:
+
+```
+https://autopart-b2b-desktop.vercel.app/api/health
+```
+
+Expected response:
+```json
+{ "status": "ok", "backend": "supabase" }
+```
+
+### Switching between Railway and Vercel
+
+To switch the backend URL, update `.env.production` in the project root:
+
+```env
+# Use Vercel (backup)
+VITE_API_URL=https://autopart-b2b-desktop.vercel.app/api
+
+# Use Railway (primary)
+# VITE_API_URL=https://autopart-b2b-desktop-production.up.railway.app/api
+```
+
+Then rebuild the desktop installer:
+
+```bash
+npm run desktop:installer
+```
+
+### Deploying to Vercel
+
+If you need to redeploy the backend to Vercel:
+
+1. Push your changes to GitHub — Vercel will auto-deploy from the `backend/` root directory
+2. Or use the Vercel CLI:
+
+```bash
+cd backend
+npx vercel --prod
+```
+
+3. Make sure all environment variables are set in the **Vercel Dashboard → Settings → Environment Variables**:
+
+| Variable | Description |
+|---|---|
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase public anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase admin key (server-side only) |
+| `JWT_SECRET` | Secret key for JWT token signing |
+| `NODE_ENV` | Set to `production` |
+| `CLIENT_URL` | Frontend/Desktop origin URL (for CORS) |
+
 
 ## Main Features
 
