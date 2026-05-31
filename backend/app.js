@@ -41,6 +41,11 @@ app.use(cors({
       return callback(null, true);
     }
 
+    // Allow any Vercel app URL
+    if (origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
