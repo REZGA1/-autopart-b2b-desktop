@@ -30,7 +30,7 @@ app.use(cors({
     if (origin.includes('localhost') || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-
+  
     // Allow Electron file:// protocol
     if (origin.startsWith('file://')) {
       return callback(null, true);

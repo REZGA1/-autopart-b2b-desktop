@@ -260,7 +260,7 @@ VITE_API_URL=https://autopart-b2b-desktop.vercel.app/api
 Then rebuild the desktop installer:
 
 ```bash
-npm run desktop:installer
+
 ```
 
 ### Deploying to Vercel

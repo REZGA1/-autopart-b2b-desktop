@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const StoreController = require('../controllers/storeController');
-const { protect, authorize } = require('../middleware/auth.middleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Product image proxy (public route for <img> tags)
 router.get('/products/:productId/image', (req, res) => StoreController.getProductImage(req, res));

@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const SupplierCatalogController = require('../controllers/supplierCatalogController');
 const StoreController = require('../controllers/storeController');
-const { protect, authorize } = require('../middleware/auth.middleware');
-const { upload } = require('../middleware/upload.middleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
+const { upload } = require('../middleware/uploadMiddleware');
 
 // Product image proxy (PUBLIC - serves images without auth to work with <img> tags)
 router.get('/products/:productId/image', (req, res) => SupplierCatalogController.getProductImage(req, res));

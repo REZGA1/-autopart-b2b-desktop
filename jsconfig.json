@@ -1,13 +1,14 @@
 {
+  "$schema": "https://json.schemastore.org/jsconfig",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./frontend/src/*"],
       "@/components/*": ["./frontend/src/components/*"],
+      "@/services/*": ["./frontend/src/services/*"],
+      "@/stores/*": ["./frontend/src/stores/*"],
       "@/lib/*": ["./frontend/src/lib/*"],
       "@/pages/*": ["./frontend/src/pages/*"],
       "@/hooks/*": ["./frontend/src/hooks/*"],
-      "@/stores/*": ["./frontend/src/stores/*"],
       "@/schemas/*": ["./frontend/src/schemas/*"],
       "@/assets/*": ["./frontend/src/assets/*"]
     }

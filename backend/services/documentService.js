@@ -1,5 +1,5 @@
 const { supabaseAdmin } = require('../config/supabase');
-const ProfileModel = require('../models/userModel');
+const ProfileModel = require('../repositories/userRepository');
 const documentConfig = require('../config/document.config');
 
 /**

@@ -3,10 +3,10 @@ const router = express.Router();
 const AuthController =
   require('../controllers/authController');
 const { protect } =
-  require('../middleware/auth.middleware');
+  require('../middleware/authMiddleware');
 const { validateRegister, validateLogin, validateProfileUpdate } =
-  require('../middleware/validate.middleware');
-const { upload } = require('../middleware/upload.middleware');
+  require('../validators/authValidator');
+const { upload } = require('../middleware/uploadMiddleware');
 
 // ─── Public routes ───
 

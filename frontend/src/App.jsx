@@ -1,18 +1,17 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useAuth, useAuthStore } from '@/lib/authStore'
-import HomePage from '@/pages/HomePage'
-import LoginPage from '@/pages/LoginPage'
-import RegisterPage from '@/pages/RegisterPage'
-import ProfilePage from '@/pages/ProfilePage'
-import InventoryPage from './pages/InventoryPage.jsx'
-import VehiclesPage from './pages/VehiclesPage.jsx'
-import SupplierCatalogPage from './pages/SupplierCatalogPage.jsx'
-import SupplierRequestsPage from './pages/SupplierRequestsPage.jsx'
-import StorePage from './pages/StorePage.jsx'
-import StatisticsPage from './pages/StatisticsPage.jsx'
+import { useAuth, useAuthStore } from '@/stores/authStore'
+import HomePage from '@/pages/home/HomePage'
+import LoginPage from '@/pages/auth/LoginPage'
+import RegisterPage from '@/pages/auth/RegisterPage'
+import ProfilePage from '@/pages/profile/ProfilePage'
+import InventoryPage from '@/pages/inventory/InventoryPage'
+import VehiclesPage from '@/pages/vehicles/VehiclesPage'
+import SupplierCatalogPage from '@/pages/suppliers/SupplierCatalogPage'
+import SupplierRequestsPage from '@/pages/suppliers/SupplierRequestsPage'
+import StorePage from '@/pages/store/StorePage'
+import StatisticsPage from '@/pages/statistics/StatisticsPage'
 
-// Protected route component - redirects to login if not authenticated
 function RequireAuth({ children }) {
   const { token, loading } = useAuth()
   if (loading) return null
@@ -21,10 +20,8 @@ function RequireAuth({ children }) {
 }
 
 export default function App() {
-  
   const initializeAuth = useAuthStore((state) => state.initializeAuth)
 
-  // Initialize auth state on app mount
   useEffect(() => {
     initializeAuth()
   }, [initializeAuth])

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const InventoryController = require('../controllers/inventoryController');
-const { protect, authorize } = require('../middleware/auth.middleware');
-const { upload } = require('../middleware/upload.middleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
+const { upload } = require('../middleware/uploadMiddleware');
 
 // All routes require authentication and merchant role
 router.use(protect);

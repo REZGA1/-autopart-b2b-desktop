@@ -1,5 +1,5 @@
 # AutoPart B2B APP - AI Rules (Optimized)
-# Last updated: 2026-04-29
+# Last updated: 2026-08-18
 
 ## ⚡ CORE RULES
 - **NO TypeScript** - Pure JavaScript only
@@ -25,17 +25,35 @@
 ```
 backend/
   server.js, app.js
-  config/{env,supabase}.js
-  middleware/{auth,errorHandler,upload,validate}.js
-  controllers/{auth,merchant,inventory,document,supplierCatalog}Controller.js
-  models/{merchant,product,inventoryTransaction,vehicle,supplierProduct}Model.js
-  routes/{auth,merchant,inventory,supplierCatalog}Routes.js
+  config/{env,supabase,documentConfig}.js
+  middleware/{authMiddleware,uploadMiddleware,validateMiddleware,errorHandler}.js
+  controllers/{auth,merchant,inventory,document,supplierCatalog,store}Controller.js
+  repositories/{user,product,inventoryTransaction,merchant,supplierProduct,purchaseRequest,vehicle}Repository.js
+  routes/{auth,merchant,inventory,supplierCatalog,store}Routes.js
+  services/{auth,inventory,merchant,store,supplierCatalog,document}Service.js
+  validators/{auth,inventory,merchant,product,supplier}Validator.js
+  constants/{roles,permissions,statuses,errorCodes}.js
+  utils/{response,logger,errors}.js
 frontend/src/
   main.jsx, App.jsx, index.css
-  pages/{Home,Login,Register,Profile,Inventory,Vehicles}Page.jsx
-  components/ui/ (shadcn), Layout.jsx, {Admin,Contacts}Section.jsx
-  lib/{api,authStore,merchantApi,inventoryApi,supplierCatalogApi}.js
-  stores/onlineStore.js, hooks/useOnlineStatus.js
+  api/{apiClient,inventoryApi,merchantApi,storeApi,supplierCatalogApi}.js
+  pages/auth/{Login,Register}Page.jsx
+  pages/home/HomePage.jsx
+  pages/inventory/InventoryPage.jsx
+  pages/suppliers/{SupplierCatalog,SupplierRequests}Page.jsx
+  pages/store/StorePage.jsx
+  pages/vehicles/VehiclesPage.jsx
+  pages/statistics/StatisticsPage.jsx
+  pages/profile/ProfilePage.jsx
+  components/ui/ (shadcn)
+  components/common/{Layout,UserPageHeader,ProductImage,ValidatedBadge,ConfirmDialog,ToastNotification}.jsx
+  components/admin/{Admin,Contacts}Section.jsx
+  services/{apiClient,inventoryService,merchantService,storeService,supplierCatalogService}.js
+  stores/{authStore,onlineStore}.js
+  hooks/{useOnlineStatus,useToast}.js
+  schemas/{profileFormSchema}.js
+  constants/{roles,statuses}.js
+  lib/{utils}.js
 ```
 
 ## 🔄 PATTERNS
@@ -54,7 +72,7 @@ frontend/src/
 
 ### Forms
 - Frontend: react-hook-form + Zod validation
-- Backend: Joi validation
+- Backend: Custom validators in `validators/` directory
 - shadcn/ui uses `@base-ui/react` + `cn()` utility
 
 ## 🚫 PROHIBITIONS
@@ -62,12 +80,15 @@ frontend/src/
 - ❌ Client modifies `validated` field
 - ❌ Forget CORS credentials for cookie auth
 - ❌ Assume file paths - always search first
+- ❌ Use `.middleware.js` naming - use `Middleware.js` consistently
 
 ## 📊 INVENTORY SYSTEM
 - **Tables**: `products`, `inventory_transactions`, `vehicles`, `merchant_vehicles`
 - **Features**: Auto transaction logging, stock alerts, filters, sorting
 - **Storage**: Supabase bucket `Merchant_Products`
 - **Endpoints**: CRUD + image upload + transaction history
+- **Repositories**: Data access layer in `repositories/` directory
+- **Services**: Business logic in `services/` directory
 
 ## ✏️ EDITING
 - Read before edit, minimal changes
