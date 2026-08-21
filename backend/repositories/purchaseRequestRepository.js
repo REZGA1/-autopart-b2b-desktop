@@ -14,7 +14,7 @@
  */
 
 const { supabaseAdmin } = require('../config/supabase');
-const InventoryTransactionModel = require('./inventoryTransactionModel');
+const InventoryTransactionModel = require('./inventoryRepository');
 
 const SUPPLIER_PRODUCTS_BUCKET = 'supplier_products';
 const MERCHANT_PRODUCTS_BUCKET = 'Merchant_Products';
